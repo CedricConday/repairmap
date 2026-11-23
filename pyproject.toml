@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repairmap"
+version = "0.1.0"
+description = "A checked, machine-readable table of myelin repair trials in multiple sclerosis"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Cedric Conday" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+repairmap = "repairmap.cli:main"
+
+# The table lives in data/ at the top of the repository so that it is easy to
+# find and edit. A built wheel carries the same file as repairmap/data/.
+[tool.setuptools]
+packages = ["repairmap", "repairmap.data"]
+
+[tool.setuptools.package-dir]
+"repairmap.data" = "data"
+
+[tool.setuptools.package-data]
+"repairmap.data" = ["trials.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
