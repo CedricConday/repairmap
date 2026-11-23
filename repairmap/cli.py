@@ -34,6 +34,7 @@ def _parser() -> argparse.ArgumentParser:
     lst.add_argument("--agent", help="agent name contains this text")
     lst.add_argument("--mechanism", help="mechanism contains this text")
     lst.add_argument("--population", help="population contains this text")
+    lst.add_argument("--registry-id", dest="registry_id", help="registry id contains this text")
     lst.add_argument("--phase", help="phase is exactly this, for example 2 or 1/2")
     lst.add_argument("--result", choices=RESULTS)
     lst.add_argument("--outcome-class", dest="outcome_class", choices=OUTCOME_CLASSES)
@@ -90,6 +91,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         agent=args.agent,
         mechanism=args.mechanism,
         population=args.population,
+        registry_id=args.registry_id,
         phase=args.phase,
         result=args.result,
         outcome_class=args.outcome_class,

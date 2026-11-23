@@ -9,6 +9,7 @@ GOOD = {
     "id": "drug-trial",
     "agent": "drug",
     "trial": "TRIAL",
+    "registry_id": "NCT00000000",
     "mechanism": "some mechanism",
     "phase": "2",
     "n": "50",
@@ -21,6 +22,8 @@ GOOD = {
     "source_type": "paper",
     "source_date": "2020",
     "second_check": "no",
+    "checked_on": "",
+    "check_note": "source not reachable",
 }
 
 
@@ -47,6 +50,9 @@ def test_good_row_is_clean():
         ({"source_date": "May 2020"}, "source_date"),
         ({"second_check": "maybe"}, "second_check"),
         ({"effect": " padded"}, "stray whitespace in effect"),
+        ({"checked_on": "23 Nov 2026"}, "checked_on"),
+        ({"second_check": "yes"}, "without checked_on"),
+        ({"check_note": ""}, "without a check_note"),
     ],
 )
 def test_each_rule_fires(changes, expected):
@@ -68,13 +74,20 @@ def test_empty_n_is_allowed():
 def test_summary_counts():
     rows = [
         row(),
-        row(id="b", result="negative", outcome_class="functional", second_check="yes"),
+        row(
+            id="b",
+            result="negative",
+            outcome_class="functional",
+            second_check="yes",
+            checked_on="2026-11-23",
+        ),
         row(id="c", agent="other", result="ongoing"),
     ]
     text = summary(rows)
     assert "rows: 3   agents: 2" in text
-    assert "with an efficacy or harm result: 2" in text
+    assert "with a result on the primary outcome: 2" in text
     assert "biomarker primary: positive 1" in text
     assert "functional primary: negative 1" in text
-    assert "without one: ongoing 1" in text
+    assert "without one: 1" in text
+    assert "  ongoing 1" in text
     assert "checked a second time: 1 of 3" in text

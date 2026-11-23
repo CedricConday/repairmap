@@ -13,19 +13,22 @@ RESULTS = (
     "mixed",
     "negative",
     "harm",
+    "unclear",
     "safety_only",
     "ongoing",
     "not_started",
     "stopped",
+    "not_reported",
 )
 SOURCE_TYPES = ("paper", "registry", "conference", "company", "review")
 REQUIRED = ("id", "agent", "mechanism", "phase", "primary_outcome", "result", "source")
 
-# Results that say something about efficacy or harm, as opposed to status.
+# Results that make a call on the primary outcome, as opposed to a status.
 EFFICACY_RESULTS = ("positive", "mixed", "negative", "harm")
 
 ID_PATTERN = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
 DATE_PATTERN = re.compile(r"\d{4}(-\d{2}(-\d{2})?)?")
+DAY_PATTERN = re.compile(r"\d{4}-\d{2}-\d{2}")
 
 
 def problems(rows: list[Row]) -> list[str]:
@@ -57,6 +60,12 @@ def problems(rows: list[Row]) -> list[str]:
             out.append(f"{tag}: source_date {row['source_date']!r}")
         if row["second_check"] not in {"yes", "no"}:
             out.append(f"{tag}: second_check {row['second_check']!r}")
+        if row["checked_on"] and not DAY_PATTERN.fullmatch(row["checked_on"]):
+            out.append(f"{tag}: checked_on {row['checked_on']!r}")
+        if row["second_check"] == "yes" and not (row["checked_on"] and row["check_note"]):
+            out.append(f"{tag}: second_check is yes without checked_on and check_note")
+        if row["second_check"] == "no" and not row["check_note"]:
+            out.append(f"{tag}: second_check is no without a check_note giving the reason")
     return out
 
 
@@ -67,7 +76,7 @@ def summary(rows: list[Row]) -> str:
     status = Counter(r["result"] for r in rows if r["result"] not in EFFICACY_RESULTS)
     lines = [
         f"rows: {len(rows)}   agents: {len({r['agent'] for r in rows})}",
-        f"with an efficacy or harm result: {len(done)}",
+        f"with a result on the primary outcome: {len(done)}",
     ]
     for cls in OUTCOME_CLASSES:
         parts = [f"{res} {by[(cls, res)]}" for res in EFFICACY_RESULTS if by[(cls, res)]]
@@ -75,7 +84,8 @@ def summary(rows: list[Row]) -> str:
             lines.append(f"  {cls} primary: " + ", ".join(parts))
     rest = [f"{res} {status[res]}" for res in RESULTS if status[res]]
     if rest:
-        lines.append("without one: " + ", ".join(rest))
+        lines.append(f"without one: {len(rows) - len(done)}")
+        lines.append("  " + ", ".join(rest))
     checked = sum(r["second_check"] == "yes" for r in rows)
     lines.append(f"checked a second time: {checked} of {len(rows)}")
     return "\n".join(lines)

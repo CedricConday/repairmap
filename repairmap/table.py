@@ -15,6 +15,7 @@ FIELDS = (
     "id",
     "agent",
     "trial",
+    "registry_id",
     "mechanism",
     "phase",
     "n",
@@ -27,6 +28,8 @@ FIELDS = (
     "source_type",
     "source_date",
     "second_check",
+    "checked_on",
+    "check_note",
 )
 
 Row = dict[str, str]
@@ -59,11 +62,12 @@ def load(path: Path | str | None = None) -> list[Row]:
 def select(rows: Iterable[Row], **filters: str | None) -> list[Row]:
     """Keep the rows that match every given filter.
 
-    A filter on ``agent``, ``mechanism``, ``population`` or ``trial`` matches
+    A filter on ``agent``, ``mechanism``, ``population``, ``trial`` or
+    ``registry_id`` matches
     when the text appears anywhere in the cell, ignoring case. Every other
     column must match exactly.
     """
-    loose = {"agent", "mechanism", "population", "trial"}
+    loose = {"agent", "mechanism", "population", "trial", "registry_id"}
     wanted = {k: v for k, v in filters.items() if v is not None}
     unknown = set(wanted) - set(FIELDS)
     if unknown:
