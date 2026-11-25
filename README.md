@@ -3,7 +3,7 @@
 A checked, machine-readable table of clinical trials of myelin repair
 (remyelination) therapies in multiple sclerosis (MS). One row per trial.
 
-The table is one file: [`data/trials.csv`](data/trials.csv). It holds 64 trials
+The table is one file: `data/trials.csv`. It holds 64 trials
 of 39 agents as of 2026-11-23.
 
 **Nothing here is medical advice.** This is a research table for people who
@@ -22,7 +22,7 @@ and the date it was checked.
 ## How a row gets in
 
 A trial gets a row when all of these hold. The full rule, with the judgement
-calls, is in [`docs/METHOD.md`](docs/METHOD.md).
+calls, is in `docs/METHOD.md`.
 
 1. It is an interventional trial in humans. It is on a trial registry, or
    published, or announced by its sponsor.
@@ -39,7 +39,7 @@ calls, is in [`docs/METHOD.md`](docs/METHOD.md).
    its own comparison between the original groups.
 
 Trials that were looked at and left out are listed, each with a reason, in
-[`docs/EXCLUDED.md`](docs/EXCLUDED.md).
+`docs/EXCLUDED.md`.
 
 ## Headline counts
 
@@ -122,7 +122,7 @@ Open `data/trials.csv` in any spreadsheet, or load it in code. The command
 line tool needs Python 3.10 or later and nothing else.
 
 ```
-pip install -e .
+pip install repairmap
 repairmap check
 repairmap summary
 repairmap show clemastine-rebuild
@@ -192,5 +192,5 @@ correction without a source cannot be applied.
 
 ## Licence
 
-MIT. See [`LICENSE`](LICENSE). The facts in the table come from the cited
+MIT. See `LICENSE`. The facts in the table come from the cited
 papers and registry records; no table or text was copied from any review.
